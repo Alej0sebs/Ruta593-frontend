@@ -21,7 +21,7 @@ export const useLogout = () => {
             if(data.error){
                 throw new Error(data.error);
             }
-            localStorage.removeItem('chaski-log');
+            localStorage.removeItem('ruta593-log');
             setAuthUser(null);
         }catch(error){
             toast.error(verifyError(error));
