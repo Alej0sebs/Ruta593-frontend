@@ -111,7 +111,7 @@ const TicketSeriesRegistration = () => {
                     opKey="dni"
                     opValue="full_name"
                     optionP="full_name"
-                    inputClassName="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    
                   />
                 )}
               </div>
@@ -132,7 +132,7 @@ const TicketSeriesRegistration = () => {
                     opKey="id"
                     opValue="name"
                     optionP="name"
-                    inputClassName="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    
                   />
                 )}
               </div>
