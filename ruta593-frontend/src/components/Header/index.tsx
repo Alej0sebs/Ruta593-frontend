@@ -4,8 +4,8 @@ import DropdownUser from './DropdownUser';
 import { FaHome, FaCogs, FaUserShield, FaUsers, FaBus, FaUser } from 'react-icons/fa';
 
 // ✅ IMPORTACIÓN CORRECTA DE LOGO DESDE VITE
-import RutaLogo from '../../images/ruta593-logo/ruta593.png';
-import MountainLogo from '../../images/ruta593-logo/mountain.png';
+import RutaLogo from '../../images/chaski-logo/ruta593.png';
+import MountainLogo from '../../images/chaski-logo/mountain.png';
 
 const Header = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -36,12 +36,13 @@ const Header = () => {
             </button>
             {openMenu === 'registros' && (
               <div className="absolute bg-white text-black mt-2 p-2 shadow-lg rounded-md min-w-[220px] z-10">
+                <Link to="/register/busStations" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Registrar Terminal</Link>
                 <Link to="/register/linkStations" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Estaciones Vinculadas</Link>
                 <Link to="/register/typeSeats" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Tipo de Asiento</Link>
                 <Link to="/register/typebus" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Estructura de Buses</Link>
                 <Link to="/register/bus" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Registro de Buses</Link>
-                <Link to="/register/tickets" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Series de Tickets</Link>
-                <Link to="/register/busStations" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Terminales Registradas</Link>
+                
+                
               </div>
             )}
           </div>
@@ -53,10 +54,9 @@ const Header = () => {
             </button>
             {openMenu === 'procesos' && (
               <div className="absolute bg-white text-black mt-2 p-2 shadow-lg rounded-md min-w-[220px] z-10">
-                <Link to="/processes/frequency" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Creación de Frecuencias</Link>
-                <Link to="/processes/routes" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Creación de Rutas</Link>
-                <Link to="/processes/frequency-list" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Venta de Tickets</Link>
-                
+                <Link to="/processes/routes" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Creación de Frecuencias</Link>
+                <Link to="/processes/frequency" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Rutas</Link>
+                <Link to="/processes/ticketsales" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setOpenMenu(null)}>Venta de Tickets</Link>
               </div>
             )}
           </div>
