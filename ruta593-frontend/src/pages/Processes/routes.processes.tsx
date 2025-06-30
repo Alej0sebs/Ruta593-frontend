@@ -14,33 +14,36 @@ const initialStateTimeDate: timeAndPriceT = {
     departure_time: '',
     arrival_time: '',
     price: 0
-}
+};
 
-// DATOS DE PRUEBA RENDERIZADO
-const titles = ['id', 'departure_station_name',
-    'departure_city_name', 'arrival_station_name',
-    'arrival_city_name', 'time'];
-const expandTitles = ['stop_station_names', 'stop_city_names'];
-const displayHeader = ['Identificador', 'Estación de salida', 'Ciudad de salida',
-    'Estación de llegada', 'Ciudad de llegada', 'Horario'];
+const titles = [
+    'departure_station_name',
+    'departure_city_name',
+    'arrival_station_name',
+    'arrival_city_name',
+    'time'
+];
+const expandTitles: string[] = [];
+const displayHeader = [
+    'Estación de salida',
+    'Ciudad de salida',
+    'Estación de llegada',
+    'Ciudad de llegada',
+    'Horario'
+];
 
 const RoutesRegistration = () => {
-
     const [isStopsEnabled, setIsStopsEnabled] = useState(false);
-    const [stopOvers, setStopOvers] = useState<BusStationT[]>([]); //tiene que ser del tipo de dato que se va a guardar id parada - nombre parada
-    const { dataListBusStations } = useBusStations(); //hook para obtener las paradas
-    const [selectedDepartureStation, setSelectedDepartureStation] = useState(""); //estado para guardar la parada de salida
-    const [selectedArrivalStation, setSelectedArrivalStation] = useState(""); //estado para guardar la parada de llegada
+    const [stopOvers, setStopOvers] = useState<BusStationT[]>([]);
+    const { dataListBusStations } = useBusStations();
+    const [selectedDepartureStation, setSelectedDepartureStation] = useState("");
+    const [selectedArrivalStation, setSelectedArrivalStation] = useState("");
     const [selectedStopOver, setSelectedStopOver] = useState("");
     const [selectedDataTimeAndPrice, setSelectedDataTimeAndPrice] = useState<timeAndPriceT>(initialStateTimeDate);
-    //PaginationDataTable data
     const { loading, getRoutes } = useRoutes();
-    //Listado de las rutas
     const [listRoutes, setListRoutes] = useState<any[]>([]);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState<number>(1);
-
-    //Hook
     const { createRoute } = useRoutes();
 
     const fetchRoutes = async (page: number = 1) => {
@@ -51,17 +54,16 @@ const RoutesRegistration = () => {
         } else {
             setListRoutes([]);
         }
-    }
+    };
 
     useEffect(() => {
         fetchRoutes(currentPage);
     }, [currentPage]);
 
     const handleChange = (checked: boolean) => {
-        setIsStopsEnabled(checked); //actualizo el estado con el valor del checkbox
+        setIsStopsEnabled(checked);
     };
 
-    //Manejar el cambio de la hora y fecha de los inputs
     const handleTimeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedDataTimeAndPrice({
             ...selectedDataTimeAndPrice,
@@ -73,18 +75,22 @@ const RoutesRegistration = () => {
         e.preventDefault();
         if (!selectedDepartureStation || !selectedArrivalStation) return toast.error("Debe seleccionar una estación de salida y una estación de llegada");
         if (!selectedDataTimeAndPrice.departure_time || !selectedDataTimeAndPrice.arrival_time) return toast.error("Debe seleccionar una hora de salida y una hora de llegada");
+        if (!selectedDataTimeAndPrice.price) return toast.error("Debe ingresar un precio para la ruta");
+
         const departure_station_id: number = parseInt(selectedDepartureStation);
         const arrival_station_id: number = parseInt(selectedArrivalStation);
         const stopOverList: number[] = stopOvers.map((station) => Number(station.id));
-        //Crear la ruta
+
         const wasCreated = await createRoute({
-            departure_station_id, arrival_station_id, stopOverList,
+            departure_station_id,
+            arrival_station_id,
+            stopOverList,
             departure_time: selectedDataTimeAndPrice.departure_time,
             arrival_time: selectedDataTimeAndPrice.arrival_time,
             default_price: Number(selectedDataTimeAndPrice.price)
         });
         if (wasCreated) cleanData();
-    }
+    };
 
     const handleCancelBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -96,6 +102,7 @@ const RoutesRegistration = () => {
         setSelectedArrivalStation("");
         setSelectedStopOver("");
         setStopOvers([]);
+        setSelectedDataTimeAndPrice(initialStateTimeDate);
     };
 
     const handleAddStopOver = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -109,178 +116,137 @@ const RoutesRegistration = () => {
             setStopOvers([...stopOvers, stopOver]);
             setSelectedStopOver("");
         }
-    }
+    };
 
-    //Filtros para que no aparezcan las paradas de salida y llegada en las opciones de paradas
     const departureOptions = dataListBusStations.filter((station) => station.id !== selectedArrivalStation);
     const arrivalOptions = dataListBusStations.filter((station) => station.id !== selectedDepartureStation);
     const stopOversOptions = dataListBusStations.filter((station) => station.id !== selectedDepartureStation && station.id !== selectedArrivalStation);
 
     return (
-        <>
-            <div className="mx-auto bg-[#172433] min-h-screen">
-                <Breadcrumb pageName="Registro de Frecuencias" />
-
-                <div className="grid grid-cols-5 gap-8">
-                    <div className="col-span-5 xl:col-span-5">
-                        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                            <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                                <h3 className="font-medium text-black dark:text-white">
-                                    Información de la Ruta
-                                </h3>
+        <div className="mx-auto max-w-7xl p-6 bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+            <Breadcrumb pageName="Registro de Frecuencias" />
+            <h2 className="text-3xl font-extrabold text-blue-900 mb-8 text-center tracking-tight">Gestión de Rutas</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div className="bg-white rounded-2xl shadow-lg border border-blue-200 p-8">
+                    <h3 className="text-xl font-bold text-blue-800 mb-6">Información de la Ruta</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <DataListBusStation
+                                    id="departure_station"
+                                    label="Estación de salida"
+                                    options={departureOptions}
+                                    placeholder="Estación A"
+                                    onSelect={(value) => setSelectedDepartureStation(value)}
+                                    value={selectedDepartureStation}
+                                    iconP={TbBusStop}
+                                />
                             </div>
-                            <div className="p-7">
-                                <form onSubmit={handleSubmit}>
-
-                                    <div className="mt-4 mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-[32.33%]">
-                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                Hora de salida:
-                                                <input
-                                                    type="time"
-                                                    name="departure_time"
-                                                    id="departure_time"
-                                                    value={selectedDataTimeAndPrice.departure_time}
-                                                    onChange={handleTimeDateChange}
-                                                    className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="w-full sm:w-[32.33%]">
-                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                Hora de llegada:
-                                                <input
-                                                    type="time"
-                                                    name="arrival_time"
-                                                    id="arrival_time"
-                                                    value={selectedDataTimeAndPrice.arrival_time}
-                                                    onChange={handleTimeDateChange}
-                                                    className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
-                                                />
-                                            </label>
-                                        </div>
-                                        <div className="w-full sm:w-[32.33%]">
-                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                Precio:
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="price"
-                                                    id="price"
-                                                    placeholder="7"
-                                                    value={selectedDataTimeAndPrice.price}
-                                                    step={0.01}
-                                                    onChange={handleTimeDateChange}
-                                                />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4 mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-[33.33%]">
-                                            <DataListBusStation
-                                                id="departure_station"
-                                                label="Estación de salida"
-                                                options={departureOptions}
-                                                placeholder="Estación A"
-                                                onSelect={(value) => setSelectedDepartureStation(value)}
-                                                value={selectedDepartureStation}
-                                                iconP={TbBusStop} />
-                                        </div>
-
-                                        <div className="w-full sm:w-[33.33%]">
-                                            <DataListBusStation
-                                                id="arrival_station"
-                                                label="Estación de llegada"
-                                                options={arrivalOptions}
-                                                placeholder="Estación B"
-                                                onSelect={(value) => setSelectedArrivalStation(value)}
-                                                value={selectedArrivalStation}
-                                                iconP={TbBusStop}
-                                            />
-                                        </div>
-
-                                        <div className="w-full sm:w-[33.33%]">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                            >
-                                                Asignar Paradas
-                                            </label>
-                                            <div className="relative">
-                                                <Switcher
-                                                    checked={isStopsEnabled}
-                                                    onChange={handleChange}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {isStopsEnabled && (
-                                        <div className="mb-5.5 flex flex-col gap-5.5">
-                                            {/* Contenedor para el input y el botón */}
-                                            <div className="w-full">
-                                                {/* Flex para alinear input y botón */}
-                                                <div className="relative flex items-center gap-3">
-                                                    {/* Input */}
-                                                    <DataListBusStation
-                                                        id="stop_over"
-                                                        label="Agregar Paradas"
-                                                        options={stopOversOptions}
-                                                        placeholder="Parada"
-                                                        onSelect={(value) => setSelectedStopOver(value)}
-                                                        value={selectedStopOver}
-                                                        iconP={TbBusStop}
-                                                        className="w-full sm:w-[50%]"
-                                                    />
-                                                    {/* Botón */}
-                                                    <button
-                                                        className="mt-8 rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                                        type="button"
-                                                        onClick={handleAddStopOver}
-                                                    >
-                                                        Agregar
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Colocar TableRoutesComponent debajo del input y botón */}
-                                            <div className="mt-5">
-                                                <TableRoutes
-                                                    headerTable={['id', 'name', 'city_bus_station.name']}
-                                                    displayHeader={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
-                                                    onClick={(id) => { setStopOvers(stopOvers.filter((station) => station.id !== id)) }}
-                                                >
-                                                    {stopOvers}
-                                                </TableRoutes>
-                                            </div>
-                                        </div>
-                                    )}
-
-
-
-                                    <div className="flex justify-end gap-4.5">
-                                        <button
-                                            className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                            type="button"
-                                            onClick={handleCancelBtn}
-                                        >
-                                            Cancelar
-                                        </button>
-                                        <button
-                                            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                            type="submit"
-                                        >
-                                            Guardar
-                                        </button>
-                                    </div>
-                                </form>
+                            <div>
+                                <DataListBusStation
+                                    id="arrival_station"
+                                    label="Estación de llegada"
+                                    options={arrivalOptions}
+                                    placeholder="Estación B"
+                                    onSelect={(value) => setSelectedArrivalStation(value)}
+                                    value={selectedArrivalStation}
+                                    iconP={TbBusStop}
+                                />
                             </div>
                         </div>
-                    </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <label className="block text-blue-900 font-semibold mb-1">Hora de salida</label>
+                                <input
+                                    type="time"
+                                    name="departure_time"
+                                    id="departure_time"
+                                    value={selectedDataTimeAndPrice.departure_time}
+                                    onChange={handleTimeDateChange}
+                                    className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 text-blue-900 outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-blue-900 font-semibold mb-1">Hora de llegada</label>
+                                <input
+                                    type="time"
+                                    name="arrival_time"
+                                    id="arrival_time"
+                                    value={selectedDataTimeAndPrice.arrival_time}
+                                    onChange={handleTimeDateChange}
+                                    className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 text-blue-900 outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-blue-900 font-semibold mb-1">Precio</label>
+                                <input
+                                    className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 text-blue-900 outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                    type="number"
+                                    name="price"
+                                    id="price"
+                                    placeholder="7"
+                                    value={selectedDataTimeAndPrice.price}
+                                    step={0.01}
+                                    onChange={handleTimeDateChange}
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-blue-900 font-semibold mb-1">¿Asignar Paradas?</label>
+                            <Switcher checked={isStopsEnabled} onChange={handleChange} />
+                        </div>
+                        {isStopsEnabled && (
+                            <div className="mb-6">
+                                <div className="flex gap-3 items-end">
+                                    <div className="flex-1">
+                                        <DataListBusStation
+                                            id="stop_over"
+                                            label="Agregar Paradas"
+                                            options={stopOversOptions}
+                                            placeholder="Parada"
+                                            onSelect={(value) => setSelectedStopOver(value)}
+                                            value={selectedStopOver}
+                                            iconP={TbBusStop}
+                                        />
+                                    </div>
+                                    <button
+                                        className="rounded bg-green-700 py-2 px-6 font-medium text-white hover:bg-green-800 transition"
+                                        type="button"
+                                        onClick={handleAddStopOver}
+                                    >
+                                        Agregar
+                                    </button>
+                                </div>
+                                <div className="mt-4">
+                                    <TableRoutes
+                                        headerTable={['id', 'name', 'city_bus_station.name']}
+                                        displayHeader={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
+                                        onClick={(id) => { setStopOvers(stopOvers.filter((station) => station.id !== id)) }}
+                                    >
+                                        {stopOvers}
+                                    </TableRoutes>
+                                </div>
+                            </div>
+                        )}
+                        <div className="flex justify-end gap-4">
+                            <button
+                                className="rounded border border-blue-400 py-2 px-6 font-medium text-blue-700 bg-white hover:bg-blue-50 transition"
+                                type="button"
+                                onClick={handleCancelBtn}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className="rounded bg-blue-700 py-2 px-6 font-medium text-white hover:bg-blue-800 transition"
+                                type="submit"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                {/* Tabla de rutas */}
-                <div className="mt-4 col-span-8 xl:col-span-5 ">
+                <div className="bg-white rounded-2xl shadow-lg border border-blue-200 p-8">
+                    <h3 className="text-xl font-bold text-blue-800 mb-6">Listado de Rutas</h3>
                     <PaginationDataTable
                         displayHeader={displayHeader}
                         titles={titles}
@@ -295,9 +261,8 @@ const RoutesRegistration = () => {
                         dataHeaderToExpand={expandTitles}
                     />
                 </div>
-
             </div>
-        </>
+        </div>
     );
 };
 
