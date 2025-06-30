@@ -8,7 +8,7 @@ import SvgSeatComponent from '../../components/busElements/svgSeats.components';
 import SvgBathroomComponent from '../../components/busElements/svgBathroom.components';
 import SvgStairsComponent from '../../components/busElements/svgStairs.components';
 import BusTemplate from '../../components/Bus';
-import { FaChair, FaTrash, FaSave } from 'react-icons/fa';
+import { FaTrash, FaSave } from 'react-icons/fa';
 import { MdOutlineWc } from 'react-icons/md';
 import { TbStairs } from 'react-icons/tb';
 
@@ -17,7 +17,7 @@ const TypebusRegistration = () => {
   const [numFloors, setNumFloors] = useState(1);
   const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({ 1: [] });
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
-  const [seatName, setSeatName] = useState('');
+  const [seatCounters, setSeatCounters] = useState<{ [type: string]: number }>({});
   const [bathCounter, setBathCounter] = useState(1);
   const [stairsCounter, setStairsCounter] = useState(1);
   const [selectedFloor, setSelectedFloor] = useState(1);
@@ -28,42 +28,37 @@ const TypebusRegistration = () => {
     setSelectedSeatType(selectedvalue);
   };
 
-  const seatNameExists = (name: string) => {
-    for (const floor in floorElements) {
-      if (floorElements[floor].some(el => el.type === 'seat' && el.name.toLowerCase() === name.toLowerCase())) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   const addElement = (type: string) => {
     const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
-    const busRect = busContainer!.getBoundingClientRect();
-    if (type === 'seat' && seatName === '') return;
-
-    if (type === 'seat' && seatNameExists(seatName)) {
-      toast.error(`El nombre del asiento "${seatName}" ya existe en otro piso.`);
-      return;
-    }
+    if (!busContainer) return;
+    const busRect = busContainer.getBoundingClientRect();
 
     let newElement = {
       id: '',
       type,
       name: '',
-      position: { x: 10 / busRect.width * 100, y: 10 / busRect.height * 100 },
+      position: { x: 5, y: 5 },
     };
 
-    if (type === 'seat' && seatName) {
+    if (type === 'seat') {
       if (selectedSeatType === '') return toast.error('Debes seleccionar un tipo de asiento');
-      newElement.id = `seat-${selectedSeatType}-${seatName.toLowerCase()}`;
-      newElement.name = selectedSeatType + seatName;
-      setSeatName('');
+      const currentCount = seatCounters[selectedSeatType] || 1;
+      const autoSeatName = `${selectedSeatType}${currentCount}`;
+
+      newElement.id = `seat-${selectedSeatType}-${autoSeatName.toLowerCase()}`;
+      newElement.name = autoSeatName;
+
+      setSeatCounters(prev => ({
+        ...prev,
+        [selectedSeatType]: currentCount + 1
+      }));
     } else if (type === 'bathroom') {
       newElement.id = `bath-${bathCounter}`;
+      newElement.name = `Baño ${bathCounter}`;
       setBathCounter(bathCounter + 1);
     } else if (type === 'stairs') {
       newElement.id = `stairs-${stairsCounter}`;
+      newElement.name = `Escalera ${stairsCounter}`;
       setStairsCounter(stairsCounter + 1);
     }
 
@@ -167,7 +162,7 @@ const TypebusRegistration = () => {
     if (!busConfigurationName) return toast.error('Debes asignar un nombre al bus.');
     if (floorElements[1].length === 0) return toast.error('El primer piso debe tener al menos un elemento.');
 
-    const cooperative = localStorage.getItem('ruta593-log') || '{}';
+    const cooperative = localStorage.getItem('chaski-log') || '{}';
     sendBusLayout({
       id: 0,
       name: busConfigurationName,
@@ -179,17 +174,19 @@ const TypebusRegistration = () => {
   return (
     <div className="min-h-screen bg-[#FFFFFF] px-4 py-8">
       <Breadcrumb pageName="Registro Estructura De Bus" />
-      <div className="bg-[#FEDD00] rounded-xl shadow-xl p-6 mt-6">
-        <div className="bg-[#0F1A2F] rounded-xl p-4">
+
+      <div className="bg-gradient-to-br from-blue-300 via-blue-100 to-blue-50 rounded-2xl shadow-lg border border-blue-200 p-8 mt-6">
+        <div className="rounded-2xl bg-white shadow-xl p-6">
           <div className="flex flex-col items-center gap-4">
-            <div className="bg-[#0F1A2F] rounded-xl shadow-inner p-6">
-          <h3 className="text-xl font-bold text-[#0F1A2F] bg-[#FEDD00] p-2 rounded-md w-fit mb-6">
-            Estructura del Bus
-          </h3>
-            {/* BUS + PANEL */}
+            <h3 className="text-2xl font-bold text-blue-800 mb-6">Estructura del Bus</h3>
+
             <div className="flex flex-col lg:flex-row gap-8 justify-center w-full">
-              <div id={`bus-container-${selectedFloor}`} className="relative w-[600px] h-[300px] border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg">
-                <BusTemplate floorNumber={selectedFloor} horizontal>
+              {/* Bus más pequeño */}
+              <div
+                className="relative w-[220px] h-[500px] border-4 border-blue-300 rounded-2xl bg-gradient-to-b from-blue-100 to-blue-50 shadow-lg"
+                id={`bus-container-${selectedFloor}`}
+              >
+                <BusTemplate floorNumber={selectedFloor} >
                   {floorElements[selectedFloor]?.map((element) => {
                     const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
                     const busRect = busContainer!.getBoundingClientRect();
@@ -201,7 +198,10 @@ const TypebusRegistration = () => {
                         key={element.id}
                         id={element.id}
                         className={`absolute cursor-grab ${selectedElement === element.id}`}
-                        style={{ left: `${absoluteLeft}px`, top: `${absoluteTop}px` }}
+                        style={{
+                          left: `${absoluteLeft}px`,
+                          top: `${absoluteTop}px`,
+                        }}
                       >
                         {element.type === 'seat' && <SvgSeatComponent name={element.name} isSelected={selectedElement === element.id} status='f' />}
                         {element.type === 'bathroom' && <MdOutlineWc size={24} className="text-purple-600" />}
@@ -212,11 +212,12 @@ const TypebusRegistration = () => {
                 </BusTemplate>
               </div>
 
-              <div className="bg-[#172B4D] p-6 rounded-xl shadow-xl flex flex-col items-center w-full max-w-sm">
-                <h2 className="text-white text-lg font-semibold mb-4">Agregar Elementos</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <button onClick={() => addElement('seat')} className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full">
-                    <FaChair size={20} />
+              {/* Panel de agregar elementos y campos */}
+              <div className="bg-gradient-to-br from-blue-200 via-blue-100 to-blue-50 p-6 rounded-2xl shadow-xl flex flex-col items-center w-full max-w-sm border border-blue-200">
+                <h2 className="text-blue-900 text-lg font-semibold mb-4">Agregar Elementos</h2>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <button onClick={() => addElement('seat')} className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full" title="Agregar asiento">
+                    <span className="text-xl font-bold">+</span>
                   </button>
                   <button onClick={() => addElement('bathroom')} className="bg-purple-500 hover:bg-purple-600 text-white p-3 rounded-full">
                     <MdOutlineWc size={20} />
@@ -224,62 +225,49 @@ const TypebusRegistration = () => {
                   <button onClick={() => addElement('stairs')} className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-full">
                     <TbStairs size={20} />
                   </button>
-                  <button
-                    onClick={removeSelectedElement}
-                    disabled={selectedElement === null}
-                    className={`bg-red-600 hover:bg-red-700 text-white p-3 rounded-full ${selectedElement === null ? 'opacity-50' : ''}`}
-                  >
+                  <button onClick={removeSelectedElement} disabled={selectedElement === null} className={`bg-red-600 hover:bg-red-700 text-white p-3 rounded-full ${selectedElement === null ? 'opacity-50' : ''}`}>
                     <FaTrash size={20} />
                   </button>
                 </div>
-                <button
-                  onClick={saveSeatsConfiguration}
-                  className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2"
+
+                {/* Campos que estaban abajo */}
+                <input
+                  type="text"
+                  placeholder="Nombre de la Estructura"
+                  value={busConfigurationName}
+                  onChange={(e) => setBusConfigurationName(e.target.value)}
+                  className="w-full mb-2 p-3 rounded-md bg-white text-blue-900 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <select
+                  value={numFloors}
+                  onChange={handleFloorChange}
+                  disabled={floorElements[1].length > 0}
+                  className="w-full mb-2 p-3 rounded-md bg-white text-blue-900 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
+                  <option value={1}>1 Piso</option>
+                  <option value={2}>2 Pisos</option>
+                </select>
+                <select
+                  value={selectedFloor}
+                  onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
+                  className="w-full mb-2 p-3 rounded-md bg-white text-blue-900 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
+                    <option key={floor} value={floor}>Piso {floor}</option>
+                  ))}
+                </select>
+                <SelectTypesComponent
+                  value={selectedSeatType}
+                  onSelectChange={handleSelectChange}
+                />
+
+                <button onClick={saveSeatsConfiguration} className="mt-6 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg flex items-center gap-2">
                   <FaSave /> Guardar
                 </button>
               </div>
             </div>
-
-            {/* CONTROLES FINALES */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-7 w-full max-w-6xl">
-              <input
-                type="text"
-                placeholder="Nombre del bus"
-                value={busConfigurationName}
-                onChange={(e) => setBusConfigurationName(e.target.value)}
-                className="col-span-2 p-3 rounded-md bg-[#172B4D] text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-              <select
-                value={numFloors}
-                onChange={handleFloorChange}
-                disabled={floorElements[1].length > 0}
-                className="p-3 rounded-md bg-[#172B4D] text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              >
-                <option value={1}>1 Piso</option>
-                <option value={2}>2 Pisos</option>
-              </select>
-              <select
-                value={selectedFloor}
-                onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
-                className="p-3 rounded-md bg-[#172B4D] text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              >
-                {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
-                  <option key={floor} value={floor}>Piso {floor}</option>
-                ))}
-              </select>
-              <SelectTypesComponent onSelectChange={handleSelectChange} />
-              <input
-                type="text"
-                placeholder="Número de asiento"
-                value={seatName}
-                onChange={(e) => setSeatName(e.target.value)}
-                className="p-3 rounded-md bg-[#172B4D] text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

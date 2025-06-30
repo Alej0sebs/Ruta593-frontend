@@ -81,100 +81,130 @@ const LinkStations = () => {
     <div className="min-h-screen bg-[#FFFFFF] px-4 py-8">
       <Breadcrumb pageName="Vincular Estaciones" /> {/* ✅ Breadcrumb con título */}
 
-      {/* === Estaciones vinculadas === */}
-      <div className="bg-[#FEDD00] rounded-xl shadow-xl p-6 mb-8">
-        <div className="bg-[#0F1A2F] rounded-xl shadow-inner p-6">
-          <h3 className="text-xl font-bold text-white mb-6">
-            Estaciones Vinculadas
-          </h3>
-          <TableLinkedStations data={linkedStations} />
+
+{/* === Vincular estaciones === */}
+<div className="bg-gradient-to-br from-blue-300 via-blue-100 to-blue-50 rounded-2xl shadow-lg border border-blue-200 p-8 mt-0 mb-8">
+  <h3 className="text-xl font-bold text-blue-800 mb-6">Vincular Estaciones</h3>
+  <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      handleSave();
+    }}
+  >
+    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label className="block text-blue-900 font-semibold mb-1">
+          Selecciona una estación
+        </label>
+        <div className="rounded-lg">
+          <DataList
+            id="station-selector"
+            label=""
+            options={allBusStations}
+            placeholder="Escribe para buscar..."
+            onSelect={handleStationSelection}
+            value={selectedStations.map((station) => station.name).join(', ')}
+            opKey="id"
+            opValue="name"
+            optionP="name"
+          />
         </div>
       </div>
+    </div>
 
-      {/* === Enlazar rutas === */}
-      <div className="bg-[#FEDD00] rounded-xl shadow-xl p-6">
-        <div className="bg-[#0F1A2F] rounded-xl p-6">
-          <h3 className="bg-[#FEDD00] text-[#0F1A2F] font-bold text-lg rounded-md inline-block px-4 py-2 mb-6">
-            Enlazar Rutas
-          </h3>
-
-          {stationsLoading ? (
-            <p className="text-white">Cargando estaciones...</p>
-          ) : (
-            <div className="mb-6">
-              <label className="block mb-2 text-white font-medium">
-                Selecciona una estación:
-              </label>
-              <div className="rounded-md">
-                <DataList
-                  id="station-selector"
-                  label=""
-                  options={allBusStations}
-                  placeholder="Escribe para buscar..."
-                  onSelect={handleStationSelection}
-                  value={selectedStations.map((station) => station.name).join(', ')}
-                  opKey="id"
-                  opValue="name"
-                  optionP="name"
-                  inputClassName="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
-              </div>
-            </div>
-          )}
-
-          {selectedStations.length > 0 && (
-            <div className="mb-6">
-              <h4 className="text-white font-semibold mb-2">Estaciones Seleccionadas</h4>
-              <div className="bg-[#0F1A2F] rounded-xl shadow-xl p-6">
-                <div className="overflow-x-auto rounded-lg">
-                  <table className="w-full text-sm text-left text-white">
-                    <thead className="bg-[#FEDD00] text-[#0F1A2F] uppercase text-sm">
-                      <tr>
-                        <th className="px-6 py-3 font-bold">Nombre</th>
-                        <th className="px-6 py-3 font-bold text-center">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedStations.map((station) => (
-                        <tr
-                          key={station.id}
-                          className="border-b border-gray-600 hover:bg-[#172B4D] transition"
-                        >
-                          <td className="px-6 py-4">{station.name}</td>
-                          <td className="px-6 py-4 text-center">
-                            <button
-                              onClick={() => handleRemoveStation(station.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <HiX size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              onClick={handleCancel}
-              className="bg-white border border-black text-black py-2 px-6 rounded-md font-medium hover:bg-gray-200 transition"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-[#FEDD00] text-[#0F1A2F] py-2 px-6 rounded-md font-medium hover:opacity-90 transition"
-            >
-              {saving ? 'Guardando...' : 'Guardar'}
-            </button>
+    {selectedStations.length > 0 && (
+      <div className="mb-6">
+        <h4 className="text-blue-900 font-semibold mb-2">Estaciones Seleccionadas</h4>
+        <div className="bg-blue-50 rounded-xl shadow-inner p-6">
+          <div className="overflow-x-auto rounded-lg">
+            <table className="w-full text-sm text-left text-blue-900">
+              <thead className="bg-blue-200 text-blue-800 uppercase text-sm">
+                <tr>
+                  <th className="px-6 py-3 font-bold">Nombre</th>
+                  <th className="px-6 py-3 font-bold text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedStations.map((station) => (
+                  <tr
+                    key={station.id}
+                    className="border-b border-blue-100 hover:bg-blue-100 transition"
+                  >
+                    <td className="px-6 py-4">{station.name}</td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveStation(station.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <HiX size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+    )}
+
+    <div className="flex justify-end gap-4 mt-6">
+      <button
+        type="button"
+        onClick={handleCancel}
+        className="rounded border border-blue-400 py-2 px-6 font-medium text-blue-700 bg-white hover:bg-blue-50 transition"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        disabled={saving}
+        className="rounded bg-blue-700 py-2 px-6 font-medium text-white hover:bg-blue-800 transition"
+      >
+        {saving ? 'Guardando...' : 'Guardar'}
+      </button>
+    </div>
+  </form>
+</div>
+
+{/* === Estaciones vinculadas === */}
+<div className="bg-gradient-to-br from-blue-300 via-blue-100 to-blue-50 rounded-2xl shadow-lg border border-blue-200 p-8 mb-8">
+  <h3 className="text-2xl font-bold text-blue-800 mb-6">
+    Estaciones Vinculadas
+  </h3>
+  <div className="rounded-xl shadow-inner p-6">
+    <div className="overflow-x-auto rounded-lg">
+      <table className="w-full text-base text-left text-blue-900">
+        <thead className="bg-blue-200 text-blue-900 uppercase text-base">
+          <tr>
+            <th className="px-4 py-2 font-bold">Nombre</th>
+            <th className="px-4 py-2 font-bold">Ciudad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {linkedStations.length === 0 ? (
+            <tr>
+              <td colSpan={2} className="px-4 py-3 text-center text-blue-500 bg-white">
+                No hay estaciones vinculadas.
+              </td>
+            </tr>
+          ) : (
+            linkedStations.map((station) => (
+              <tr
+                key={station.station_id}
+                className="border-b border-blue-100 bg-white hover:bg-blue-100 transition"
+              >
+                <td className="px-4 py-3">{station.name}</td>
+                <td className="px-4 py-3">{station.city_name}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
     </div>
   );
 };

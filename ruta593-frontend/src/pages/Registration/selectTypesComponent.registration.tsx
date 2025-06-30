@@ -1,11 +1,13 @@
 import { useState } from "react";
 import useTypeSeats from "../../hooks/useTypeSeats";
 
-type SelectTypesComponentProps = {
-    onSelectChange: (selectedvalue: string) => void;
+// Si usas TypeScript, define los props así:
+export interface SelectTypesComponentProps {
+  value: string;
+  onSelectChange: (selectedValue: string) => void;
 }
 
-export default function SelectTypesComponent({ onSelectChange }: SelectTypesComponentProps) {
+const SelectTypesComponent = ({ value, onSelectChange }: SelectTypesComponentProps) => {
     const { selectSeatTypes } = useTypeSeats();
     const [selectedSeatType, setSelectedSeatType] = useState<string>('');
 
@@ -42,3 +44,5 @@ export default function SelectTypesComponent({ onSelectChange }: SelectTypesComp
         </div>
     )
 }
+
+export default SelectTypesComponent;

@@ -45,136 +45,133 @@ const BusStationRegistration: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] px-4 py-8">
-      <Breadcrumb pageName="Registro de Terminales" className="text-gray" />
+      <Breadcrumb pageName="Registro de Terminales" />
 
-      <div className="bg-[#FEDD00] rounded-xl shadow-xl p-6 max-w-8xl mx-auto">
-        <div className="bg-[#0F1A2F] rounded-xl shadow-inner p-6">
-          <h3 className="text-xl font-bold text-[#0F1A2F] bg-[#FEDD00] p-4 rounded-md w-fit mb-6">Información del Terminal</h3>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Ciudad */}
-              <div>
-                <label className="block mb-1 text-white font-medium">Ciudad</label>
-                <DataList
-                  id="city_id"
-                  label=""
-                  placeholder="Seleccione o busque una ciudad"
-                  options={selectCity}
-                  value={selectedCity}
-                  onSelect={(value) => {
-                    setSelectCity(value);
-                    setInputBusStation({ ...inputBusStation, city_id: value });
-                  }}
-                  iconP={FaCity}
-                  opKey="id"
-                  opValue="name"
-                  optionP="name"
-                  inputClassName="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-                />
-              </div>
-
-              {/* Nombre del terminal */}
-              <div>
-                <label className="block mb-1 text-white font-medium">Nombre del Terminal</label>
-                <div className="relative">
-                  <span className="absolute left-4.5 top-3.5 text-white"><FaCity /></span>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-                    type="text"
-                    name="name"
-                    placeholder="Nombre del Terminal"
-                    value={inputBusStation.name}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
+      <div className="bg-gradient-to-br from-blue-300 via-blue-100 to-blue-50 rounded-2xl shadow-lg border border-blue-200 p-8 max-w-3xl mx-auto">
+        <h3 className="text-2xl font-bold text-blue-800 mb-6">Información del Terminal</h3>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Ciudad */}
+            <div>
+              <label className="block mb-1 text-blue-900 font-semibold">Ciudad</label>
+              <DataList
+                id="city_id"
+                label=""
+                placeholder="Seleccione o busque una ciudad"
+                options={selectCity}
+                value={selectedCity}
+                onSelect={(value) => {
+                  setSelectCity(value);
+                  setInputBusStation({ ...inputBusStation, city_id: value });
+                }}
+                iconP={FaCity}
+                opKey="id"
+                opValue="name"
+                optionP="name"
+                
+              />
             </div>
 
-            {/* Dirección */}
-            <div className="mb-6">
-              <label className="block mb-1 text-white font-medium">Dirección</label>
+            {/* Nombre del terminal */}
+            <div>
+              <label className="block mb-1 text-blue-900 font-semibold">Nombre del Terminal</label>
               <div className="relative">
-                <span className="absolute left-4.5 top-3.5 text-white"><MdLocationOn /></span>
+                <span className="absolute left-4 top-3.5 text-blue-400"><FaCity /></span>
                 <input
-                  className="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
+                  className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 pl-10 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                   type="text"
-                  name="address"
-                  maxLength={80}
-                  placeholder="Dirección"
-                  value={inputBusStation.address}
+                  name="name"
+                  placeholder="Nombre del Terminal"
+                  value={inputBusStation.name}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Dirección */}
+          <div className="mb-6">
+            <label className="block mb-1 text-blue-900 font-semibold">Dirección</label>
+            <div className="relative">
+              <span className="absolute left-4 top-3.5 text-blue-400"><MdLocationOn /></span>
+              <input
+                className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 pl-10 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                type="text"
+                name="address"
+                maxLength={80}
+                placeholder="Dirección"
+                value={inputBusStation.address}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Teléfono */}
+          <div className="mb-6">
+            <label className="block mb-1 text-blue-900 font-semibold">Teléfono</label>
+            <div className="relative">
+              <span className="absolute left-4 top-3.5 text-blue-400"><FaPhoneAlt /></span>
+              <input
+                className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 pl-10 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                type="text"
+                name="phone"
+                maxLength={14}
+                placeholder="+593 x xxx xxxx"
+                value={inputBusStation.phone}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Horarios */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-1 text-blue-900 font-semibold">Hora de Apertura</label>
+              <div className="relative">
+                <span className="absolute left-4 top-3.5 text-blue-400"><MdAccessTime /></span>
+                <input
+                  className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 pl-10 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                  type="time"
+                  name="open_time"
+                  value={inputBusStation.open_time}
                   onChange={handleChange}
                 />
               </div>
             </div>
 
-            {/* Teléfono */}
-            <div className="mb-6">
-              <label className="block mb-1 text-white font-medium">Teléfono</label>
+            <div>
+              <label className="block mb-1 text-blue-900 font-semibold">Hora de Cierre</label>
               <div className="relative">
-                <span className="absolute left-4.5 top-3.5 text-white"><FaPhoneAlt /></span>
+                <span className="absolute left-4 top-3.5 text-blue-400"><MdAccessTime /></span>
                 <input
-                  className="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-                  type="text"
-                  name="phone"
-                  maxLength={14}
-                  placeholder="+593 x xxx xxxx"
-                  value={inputBusStation.phone}
+                  className="w-full rounded-lg border border-blue-300 bg-white py-3 px-4 pl-10 text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                  type="time"
+                  name="close_time"
+                  value={inputBusStation.close_time}
                   onChange={handleChange}
                 />
               </div>
             </div>
+          </div>
 
-            {/* Horarios */}
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block mb-1 text-white font-medium">Hora de Apertura</label>
-                <div className="relative">
-                  <span className="absolute left-4.5 top-3.5 text-white"><MdAccessTime /></span>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-                    type="time"
-                    name="open_time"
-                    value={inputBusStation.open_time}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block mb-1 text-white font-medium">Hora de Cierre</label>
-                <div className="relative">
-                  <span className="absolute left-4.5 top-3.5 text-white"><MdAccessTime /></span>
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 bg-[#172B4D] text-white focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-                    type="time"
-                    name="close_time"
-                    value={inputBusStation.close_time}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Botones */}
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="bg-white border border-black text-black py-2 px-6 rounded-md font-medium hover:bg-gray-200 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={loadingBusStation}
-                className="bg-[#FEDD00] text-[#0F1A2F] py-2 px-6 rounded-md font-bold hover:brightness-110 transition"
-              >
-                {loadingBusStation ? 'Guardando...' : 'Guardar'}
-              </button>
-            </div>
-          </form>
-        </div>
+          {/* Botones */}
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="rounded border border-blue-400 py-2 px-6 font-medium text-blue-700 bg-white hover:bg-blue-50 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loadingBusStation}
+              className="rounded bg-blue-700 py-2 px-6 font-medium text-white hover:bg-blue-800 transition"
+            >
+              {loadingBusStation ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
